@@ -43,7 +43,7 @@ _start:
 	# li		t5, 0xffff;
 	# csrw	medeleg, t5
 	# csrw	mideleg, t5
-	la		sp, _stack
+	la		sp, _stack_end
 	# Setting `mstatus` register:
 	# 0b11 << 11: Machine's previous protection mode is 3 (MPP=3).
 	# 1 << 7    : Machine's previous interrupt-enable bit is 1 (MPIE=1).

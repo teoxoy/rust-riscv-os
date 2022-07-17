@@ -1,9 +1,6 @@
 #![no_main]
 #![no_std]
 
-mod assembly;
-mod uart;
-
 use core::arch::asm;
 
 // ///////////////////////////////////
@@ -14,7 +11,7 @@ use core::arch::asm;
 macro_rules! print {
     ($($args:tt)+) => ({
         use core::fmt::Write;
-        let _ = write!(uart::Uart::new(0x1000_0000), $($args)+);
+        let _ = write!($crate::uart::Uart::new(0x1000_0000), $($args)+);
     });
 }
 
@@ -31,6 +28,10 @@ macro_rules! println
 		print!(concat!($fmt, "\r\n"), $($args)+)
 	});
 }
+
+mod assembly;
+mod page;
+mod uart;
 
 // ///////////////////////////////////
 // / LANGUAGE STRUCTURES / FUNCTIONS
@@ -67,6 +68,13 @@ extern "C" fn kmain() {
     // Main should initialize all sub-systems and get
     // ready to start scheduling. The last thing this
     // should do is start the timer.
+
+    page::init();
+    page::alloc(64);
+    page::alloc(1);
+    page::alloc(1);
+    page::alloc(1);
+    page::print_page_allocations();
 
     let mut my_uart = uart::Uart::new(0x1000_0000);
     my_uart.init();
